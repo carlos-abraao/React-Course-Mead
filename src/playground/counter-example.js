@@ -5,8 +5,28 @@ class Counter extends React.Component{
         this.minusOne = this.minusOne.bind(this);
         this.reset = this.reset.bind(this);
         this.state = {
-            count : 0
+            count : 0//props.count
         };
+    }
+    componentDidMount(){
+        try {
+            const json = localStorage.getItem('counter');            
+            const counter = parseInt(JSON.parse(json), 10);            
+            //only call the set state if there is valid string opition
+            if (!isNaN(counter)) {                
+                this.setState(() => ({ count : counter }));
+            }
+        } catch (e) {
+            //do nothing
+        }
+    }
+    //for the componentDidUpdate lifecycle method, the first two parameters will always be the props and the state, respectively.
+    componentDidUpdate(prevProps, prevState){
+        //only change the state if there is a diference between the length in the options array. this avoid a problem when repeatvily pressing the reomve all button
+        if (prevState.count !== this.state.count) {
+            const json = JSON.stringify(this.state.count);
+            localStorage.setItem('counter', json);
+        }
     }
     addOne(){
         this.setState((prevState) =>{
@@ -43,6 +63,10 @@ class Counter extends React.Component{
         );
     }
 }
+
+// Counter.defaultProps = {
+//     count: 0
+// }
 
 ReactDOM.render(<Counter/>, document.getElementById('app'));
 
